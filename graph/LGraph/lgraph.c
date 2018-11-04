@@ -14,7 +14,7 @@
 // 头节点信息 
 typedef struct _tag_LGraph {
 	int count; 		// 顶点数量 
-	LVertex **v;	// 定点数据
+	LVertex **v;	// 顶点数据
 	LinkList **la;	// 邻接链表信息  和邻接矩阵类似 
 } LGraph_t;
  
@@ -35,31 +35,34 @@ static void Recursive_dfs(LGraph_t* graph, int v, int visited[], LGraph_Printf* 
     printf(",");
     
     for(i = 0; i < LinkList_Length_Get(graph->la[v]); i++) {
+    	// 链表节点数据 
     	ListNode_t *node = (ListNode_t *)LinkList_Get(graph->la[v], i);
     	
     	if (!visited[node->v]) {
     		Recursive_dfs(graph, node->v, visited, pFunc);
 		}
 	} 
-    
 }
 
 static void Recursive_bfs(LGraph_t* graph, int v, int visited[], LGraph_Printf* pFunc)
 {
+	// 创建队列 
     LinkQueue* queue = LinkQueue_Create();
     if (queue != NULL) {
-    	// 入队 
+    	// 将初始节点入队 
     	LinkQueue_Append(queue, graph->v + v);
     	
-    	// 标记 
+    	// 标记访问 
     	visited[v] = 1;
     	
-    	//  队长 
+    	//  队列长度 
     	while(LinkQueue_Length(queue) > 0) {
     		int i = 0;
 			
 			// 出队 
 			v = (LVertex**)LinkQueue_Poll(queue) - graph->v; 
+			
+			// 打印信息 
 			pFunc(graph->v[v]);
 			
 			printf(",");
@@ -67,6 +70,7 @@ static void Recursive_bfs(LGraph_t* graph, int v, int visited[], LGraph_Printf* 
 			for (i = 0; i < LinkList_Length_Get(graph->la[v]); i++) {
     			ListNode_t *node = (ListNode_t *)LinkList_Get(graph->la[v], i);
     			
+    			// 如果节点未被访问 ，入队 
     			if(!visited[node->v]) {
     				LinkQueue_Append(queue, graph->v + node->v);
     				visited[node->v] = 1;
@@ -103,7 +107,8 @@ LGraph* LGraph_Create(LVertex **v, int n)
 				}
 				
 				for (i = 0; (i < n) && flag; i++) { // 创建 n 个链表 
-					 flag = flag && ((ret->la[i] = LinkList_Create()) != NULL); 
+					flag = flag && 
+					       ((ret->la[i] = LinkList_Create()) != NULL); 
 				} 	 
 			}
 		} 
@@ -170,13 +175,13 @@ void LGraph_Clear(LGraph* graph)
 int LGraph_AddEdge(LGraph* graph, int v1, int v2, int w)
 {
 	LGraph_t *tgraph = (LGraph_t *)graph;
-	ListNode_t * node = NULL;
+	ListNode_t * node = (ListNode_t *)malloc(sizeof(ListNode_t));
 	int ret = (tgraph != NULL);
 	
 	ret = ret && (v1 >= 0) && (v1 <= tgraph->count);
 	ret = ret && (v2 >= 0) && (v2 <= tgraph->count);
 	ret = ret && (w > 0);
-	ret = ret && ((node = (ListNode_t *)malloc(sizeof(ListNode_t))) != NULL);  
+	ret = ret && (node != NULL);  
 	
 	if (ret) {
 		// 赋值 
@@ -184,7 +189,8 @@ int LGraph_AddEdge(LGraph* graph, int v1, int v2, int w)
 		node->w = w;
 		
 		// 插入相应位置的链表 表头位置 
-		LinkList_Insert(tgraph->la[v1], (LinkListNode_t *)node, 0);
+		LinkList_Insert(tgraph->la[v1], 
+		               (LinkListNode_t *)node, 0);
 	}
 
 	return ret;
@@ -251,7 +257,10 @@ int LGraph_GetEdge(LGraph* graph, int v1, int v2)
 int LGraph_TD(LGraph* graph, int v)
 {
 	LGraph_t *tgraph = (LGraph_t*)graph;
-	int flag = (tgraph != NULL) && (v >= 0) && (v <= tgraph->count);
+	int flag = (tgraph != NULL) && 
+	 		   (v >= 0) && 
+			   (v <= tgraph->count);
+			   
 	int ret = 0;
 	
 	if (flag) {
@@ -268,7 +277,7 @@ int LGraph_TD(LGraph* graph, int v)
 		}
 		ret += LinkList_Length_Get(tgraph->la[v]);
 	}
-	
+	return ret;	
 }
 
 // 获取图的顶点数 
@@ -348,7 +357,6 @@ void LGraph_BFS(LGraph* graph, int v, LGraph_Printf* pFunc)
 		}
 		printf("\n");
 	}
-
 	free(visited); 
 }
 

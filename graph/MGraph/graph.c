@@ -83,7 +83,7 @@ MGraph *MGraph_Create(MVertex **v, int n)
 				
 				// 构建二维数组
 				for(i = 0; i < n; i++) {
-					ret->v[i] = v[i]; // 数据保存 
+					ret->v[i] = v[i]; // 顶点数据保存 
 					ret->matrix[i] = p + i * n; // 构建二维数组 
 				} 
 				
