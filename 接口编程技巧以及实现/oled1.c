@@ -21,7 +21,7 @@ static void __oled1_font_size_cfg (void *p_drv, int request)
 /** \brief 显示字符 */
 static void __oled1_str_show(void *p_drv, const char *p_str)
 {
-	OLED_DECL(handle, p_drv);  // 类型定义 
+	OLED_DECL(handle, p_drv);                   // 类型定义 
 	printf("dev is :%s\n", handle->info->name); //设备信息打印，测试handle 
 	
 	printf("display data:%s\n",p_str);
